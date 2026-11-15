@@ -82,7 +82,7 @@ public static class DS4WindowsBridge
     };
 
     /// <summary>Copy of the base profile with the chosen mapping changes (face buttons, D-pad) and touchpad option.</summary>
-    public static string BuildProfileXml(DS4WindowsInstall inst, Dictionary<string, string> faceMap, bool touchpadOff = false, bool dpadAsStick = false, string? output = null)
+    public static string BuildProfileXml(DS4WindowsInstall inst, Dictionary<string, string> faceMap, bool touchpadOff = false, bool dpadAsStick = false, string? output = null, bool touchArrows = false)
     {
         var map = new Dictionary<string, string>(faceMap);
         if (dpadAsStick) foreach (var kv in DpadToLeftStick) map[kv.Key] = kv.Value;
@@ -95,6 +95,24 @@ public static class DS4WindowsBridge
             // classic numbering (buttons 1-14, right stick on Z/Rz, L2/R2 as buttons 7/8, D-pad as a hat).
             var od = root.SelectSingleNode("OutputContDevice") ?? root.AppendChild(doc.CreateElement("OutputContDevice"))!;
             od.InnerText = output;
+        }
+        if (touchArrows)
+        {
+            // Touchpad as buttons (also stops it moving the mouse); left/right click send arrow keys as scan codes,
+            // which old DirectInput keyboard code reads (EA's team-select screen moves controllers with the arrows).
+            var tp = root.SelectSingleNode("TouchpadOutputMode") ?? root.AppendChild(doc.CreateElement("TouchpadOutputMode"))!;
+            tp.InnerText = "Controls";
+            var ctl = root.SelectSingleNode("Control") ?? root.AppendChild(doc.CreateElement("Control"))!;
+            var key = ctl.SelectSingleNode("Key") ?? ctl.AppendChild(doc.CreateElement("Key"))!;
+            var kt = ctl.SelectSingleNode("KeyType") ?? ctl.AppendChild(doc.CreateElement("KeyType"))!;
+            foreach (var (c, vk) in new[] { ("TouchLeft", "37"), ("TouchRight", "39") })
+            {
+                foreach (var other in new[] { "Button", "Macro", "Extras" })
+                    if (ctl.SelectSingleNode($"{other}/{c}") is XmlNode n) n.ParentNode!.RemoveChild(n);
+                (key.SelectSingleNode(c) ?? key.AppendChild(doc.CreateElement(c))!).InnerText = vk;
+                (kt.SelectSingleNode(c) ?? kt.AppendChild(doc.CreateElement(c))!).InnerText = "ScanCode";
+            }
+            touchpadOff = false;
         }
         if (touchpadOff)
         {
@@ -179,13 +197,13 @@ public static class DS4WindowsBridge
         if (inst == null) return (false, "DS4Windows settings not found. Start DS4Windows once, then try again.");
         if (!Presets.TryGetValue(preset, out var p)) return (false, "Unknown layout.");
         var face = p.Map ?? new Dictionary<string, string>();
-        if (face.Count == 0 && p.Output == null && !g.PadTouchpadOff && !g.PadDpadAsStick) return await RemoveAsync(g, owner);
+        if (face.Count == 0 && p.Output == null && !g.PadTouchpadOff && !g.PadDpadAsStick && !g.PadTouchArrows) return await RemoveAsync(g, owner);
 
         var name = ProfileName(g);
         var log = new List<string>();
         AppPaths.Ensure();
         var stagedProfile = Path.Combine(AppPaths.Staging, $"ds4w-{Guid.NewGuid():N}.xml");
-        File.WriteAllText(stagedProfile, BuildProfileXml(inst, face, g.PadTouchpadOff, g.PadDpadAsStick, p.Output));
+        File.WriteAllText(stagedProfile, BuildProfileXml(inst, face, g.PadTouchpadOff, g.PadDpadAsStick, p.Output, g.PadTouchArrows));
 
         var restartExe = await StopAsync(inst);
         if (restartExe != null) log.Add("Closed DS4Windows to update its settings.");
@@ -210,6 +228,7 @@ public static class DS4WindowsBridge
             var changes = face.Select(kv => $"{kv.Key} → {kv.Value.Replace(" Button", "")}").ToList();
             if (p.Output == "ViiperDS4") changes.Insert(0, "output as a virtual DS4 (DirectInput numbering: Square 1, Cross 2, Circle 3, Triangle 4, L2/R2 = 7/8, Share 9, Options 10)");
             if (g.PadDpadAsStick) changes.Add("D-pad → left stick");
+            if (g.PadTouchArrows) changes.Add("touchpad left/right click → keyboard ←/→");
             if (g.PadTouchpadOff) changes.Add("touchpad no longer moves the mouse");
             log.Add($"Created DS4Windows profile \"{name}\" from \"{inst.BaseProfile}\" with: {string.Join(", ", changes)}.");
             log.Add(p.Output != null

@@ -9,7 +9,7 @@
     <RootNamespace>LegacyGameLauncher</RootNamespace>
     <AssemblyName>LegacyGameLauncher</AssemblyName>
     <Product>Legacy Game Launcher</Product>
-    <Version>0.9.0</Version>
+    <Version>0.9.1</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <!-- The launcher itself is 64-bit; the games it starts are 32-bit (x86). -->

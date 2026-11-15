@@ -147,6 +147,8 @@ public sealed class GameEntry
     public bool PadTouchpadOff { get; set; } = true;
     /// <summary>In the game's DS4Windows profile: D-pad sends left-stick directions.</summary>
     public bool PadDpadAsStick { get; set; }
+    /// <summary>In the game's DS4Windows profile: clicking the touchpad's left/right side sends keyboard Left/Right arrow (scan codes).</summary>
+    public bool PadTouchArrows { get; set; }
 
     public string GameDir => Path.GetDirectoryName(ExePath) ?? "";
     public override string ToString() => DisplayName;

@@ -4,6 +4,11 @@ All notable changes to Legacy Game Launcher. Versions match the GitHub release t
 Earlier versions (0.1–0.4.3) were built before the project was on GitHub; their changes are listed here
 and included in the first GitHub release.
 
+## 0.9.1 - 2026-11-15
+- Button layout: **Touchpad left / right click = keyboard ← / →** - on Rugby 08's team-select screen the game moves
+  controllers with the keyboard arrows. The touchpad works as buttons (so it no longer moves the mouse) and clicking
+  its left or right side sends Left/Right arrow as scan codes, which old DirectInput games read. The D-pad is untouched.
+
 ## 0.9.0 - 2026-11-15
 - **Fix: controller not detected in-game with the DirectInput / Rumblepad 2 layout.** DS4Windows' Auto Profile switched
   only after the game's window appeared, unplugging the virtual Xbox pad and plugging in the virtual DS4 ~3 seconds

@@ -15,13 +15,14 @@ public partial class MainWindow
         LayoutBox.SelectedIndex = Math.Max(0, Array.IndexOf(LayoutKeys, _g.PadLayout));
         LayoutTouchpadOff.IsChecked = _g.PadTouchpadOff;
         LayoutDpadStick.IsChecked = _g.PadDpadAsStick;
+        LayoutTouchArrows.IsChecked = _g.PadTouchArrows;
         var inst = DS4WindowsBridge.Find();
         LayoutStatus.Text =
             (inst == null ? "DS4Windows not found (start it once so its settings exist)." :
              $"DS4Windows {(inst.Running ? "is running" : "found (not running)")} · your usual profile: \"{inst.BaseProfile}\"") +
             (_g.Changes.Any(c => c.Group == DS4WindowsBridge.Group)
                 ? $"\nThis game uses its own profile \"{DS4WindowsBridge.ProfileName(_g)}\": {DS4WindowsBridge.Presets[_g.PadLayout].Label}" +
-                  $"{(_g.PadTouchpadOff ? ", touchpad off" : "")}{(_g.PadDpadAsStick ? ", D-pad as left stick" : "")}."
+                  $"{(_g.PadTouchpadOff ? ", touchpad off" : "")}{(_g.PadDpadAsStick ? ", D-pad as left stick" : "")}{(_g.PadTouchArrows ? ", touchpad ←/→ = arrow keys" : "")}."
                 : "\nThis game uses DS4Windows' normal profile.");
     }
 
@@ -31,7 +32,8 @@ public partial class MainWindow
         var key = LayoutKeys[Math.Max(0, LayoutBox.SelectedIndex)];
         _g.PadTouchpadOff = LayoutTouchpadOff.IsChecked == true;
         _g.PadDpadAsStick = LayoutDpadStick.IsChecked == true;
-        if (key == "Default" && !_g.PadTouchpadOff && !_g.PadDpadAsStick) { LayoutRemove_Click(sender, e); return; }
+        _g.PadTouchArrows = LayoutTouchArrows.IsChecked == true;
+        if (key == "Default" && !_g.PadTouchpadOff && !_g.PadDpadAsStick && !_g.PadTouchArrows) { LayoutRemove_Click(sender, e); return; }
         if (DS4WindowsBridge.Find() is { Running: true } &&
             MessageBox.Show(this, "DS4Windows only reads per-game profiles when it starts, so the launcher will close DS4Windows, save the layout and start it again (a couple of seconds, your controller reconnects).\n\nContinue?",
                             "Button layout", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
