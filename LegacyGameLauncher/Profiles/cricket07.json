@@ -1,0 +1,47 @@
+{
+  // Built-in profile, researched Nov 2026 - see GAME_NOTES.md for what is sourced vs. assumed.
+  "Id": "ea-cricket-07",
+  "Name": "EA Sports Cricket 07",
+  // Cricket07.exe: confirmed (Windows crash report path + browser-port project). cricket2007.exe kept as a fallback guess.
+  "ExeNames": [ "Cricket07.exe", "cricket2007.exe" ],
+  "Sha256": [],
+  "ProductNameContains": [ "Cricket 07", "Cricket 2007", "Cricket07" ],
+  // Default install: C:\Program Files (x86)\EA SPORTS\EA SPORTS(TM) Cricket 07\
+  "FolderNameContains": [ "Cricket 07", "Cricket07", "Cricket 2007" ],
+  // Profiles (.pro, binary, hold the resolution): %USERPROFILE%\Documents\EA SPORTS(TM) Cricket 07\<user-id>.pro
+  "ConfigFolderNames": [ "EA SPORTS(TM) Cricket 07", "EA SPORTS\u2122 Cricket 07", "EA SPORTS Cricket 07", "Cricket 07" ],
+  "RegistryKeys": [
+    "HKLM\\SOFTWARE\\WOW6432Node\\EA SPORTS\\EA SPORTS(TM) Cricket 07",
+    "HKLM\\SOFTWARE\\WOW6432Node\\EA SPORTS\\Cricket 07",
+    "HKCU\\Software\\EA SPORTS\\EA SPORTS(TM) Cricket 07"
+  ],
+  "Recommended": {
+    // Community guides: Windows 7 compatibility mode on Windows 8/10/11.
+    "OsMode": "WIN7RTM",
+    "DisableFullscreenOptimizations": true,
+    "HighDpiAware": true,
+    "RunAsAdmin": false,
+    // Not sourced for this game - a harmless precaution for 2006-era engines on 12+ thread CPUs.
+    "CoreLimit": 4,
+    "Priority": "Normal"
+  },
+  "RecommendedWrapper": {
+    // The game is Direct3D 8: dgVoodoo2's MS\x86\D3D8.dll. One Vogons user reports it runs with some graphical glitches.
+    "Kind": "dgVoodoo2",
+    "RefreshCap": 60,
+    "VSync": true,
+    "FpsLimit": 60
+  },
+  "InputApiHint": "Legacy DirectInput (dinput.dll). A Windows 11 crash report shows Cricket07.exe crashing inside DINPUT.dll - see the Controllers tab (unplug HID devices / dinputto8).",
+  "Notes": "Direct3D 8, 4:3 game. Known on Windows 10/11: crash on start (one report: worked on Windows 10, crashes on Windows 11), crash inside DINPUT.dll while enumerating input devices, and limited resolutions. Resolution is stored as two little-endian 16-bit values in the binary .pro profile in Documents\\EA SPORTS(TM) Cricket 07 - the Game config tab can edit it (backup first). Widescreen needs a community mod (e.g. retrobone/EACricketWidescreenFix), which you install yourself.",
+  "DrmNotes": "Retail disc uses SafeDisc 4 (PCGamingWiki, GameCopyWorld; the browser-port project also states the retail Cricket07.exe is SafeDisc-wrapped). SafeDisc's secdrv.sys driver is disabled on Windows 10/11, so the disc check cannot run there. No official DRM-free or digital re-release is known. This launcher only reports SafeDisc - it never removes or bypasses it.",
+  "Sources": [
+    "PCGamingWiki: Cricket 07 (config path, SafeDisc 4, widescreen mod) - https://www.pcgamingwiki.com/wiki/Cricket_07",
+    "github.com/Dhaiwat10/cricket07-browser (Cricket07.exe, Direct3D 8, DirectInput, SafeDisc-wrapped retail exe)",
+    "github.com/retrobone/EACricketWidescreenFix (community widescreen fix)",
+    "EA Forums: 'Cricket 07 isn't opening in Windows 10 or 11' (Win11 crash reports)",
+    "Vogons: dgVoodoo2 works with glitches; dxwrapper attempt crashed",
+    "megacricketstudio guides: Windows 7 compatibility mode on Windows 10",
+    "User crash report 2026-11-15: Cricket07.exe faulting in DINPUT.dll (0xC0000005)"
+  ]
+}

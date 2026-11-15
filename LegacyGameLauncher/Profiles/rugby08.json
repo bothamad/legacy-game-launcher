@@ -1,0 +1,43 @@
+{
+  // Built-in profile, researched Nov 2026 - see GAME_NOTES.md for what is sourced vs. assumed.
+  "Id": "ea-rugby-08",
+  "Name": "EA Sports Rugby 08",
+  // Rugby08.exe: confirmed by several install listings. Others are fallback guesses.
+  "ExeNames": [ "Rugby08.exe", "Rugby 08.exe" ],
+  "Sha256": [],
+  "ProductNameContains": [ "Rugby 08", "Rugby 2008", "Rugby08" ],
+  "FolderNameContains": [ "Rugby 08", "Rugby08" ],
+  // Profiles (.pro, binary, hold the resolution): Documents\EA SPORTS(TM) Rugby 08\ (forums write it as "EA SPORTS™ Rugby 08")
+  "ConfigFolderNames": [ "EA SPORTS(TM) Rugby 08", "EA SPORTS™ Rugby 08", "EA SPORTS Rugby 08", "Rugby 08" ],
+  "RegistryKeys": [
+    "HKLM\\SOFTWARE\\WOW6432Node\\EA SPORTS\\EA SPORTS(TM) Rugby 08",
+    "HKLM\\SOFTWARE\\WOW6432Node\\EA SPORTS\\Rugby 08",
+    "HKCU\\Software\\EA SPORTS\\EA SPORTS(TM) Rugby 08"
+  ],
+  "Recommended": {
+    "OsMode": "WIN7RTM",
+    "DisableFullscreenOptimizations": true,
+    "HighDpiAware": true,
+    "RunAsAdmin": false,
+    // Not sourced for this game - a harmless precaution on CPUs with many threads.
+    "CoreLimit": 4,
+    "Priority": "Normal"
+  },
+  "RecommendedWrapper": {
+    // The community widescreen fix (PCGamingWiki, 2025) recommends dgVoodoo2's d3d8.dll for higher resolutions.
+    "Kind": "dgVoodoo2",
+    "RefreshCap": 60,
+    "VSync": true,
+    "FpsLimit": 60
+  },
+  "InputApiHint": "Probably legacy DirectInput like Cricket 07 (same developer, HB Studios). The launcher confirms it from the exe.",
+  "Notes": "HB Studios engine shared with Cricket 07; Direct3D 8 (the community widescreen fix ships dgVoodoo2's d3d8.dll - the app confirms from the exe). Resolution is stored as two little-endian 16-bit values (width, height) in the binary .pro profile in Documents\\EA SPORTS(TM) Rugby 08; the offset differs between profiles, so the Game config tab searches for it. Forum users report changing in-game display options can reset it to 1024x768. A freeze at the start-up screen has been reported, sometimes from antivirus - add an exception if so. Widescreen needs the community fix (you install it yourself).",
+  "DrmNotes": "Listed on PCGamingWiki's SafeDisc page (version not given). SafeDisc's secdrv.sys driver is disabled on Windows 10/11, so the disc check cannot run there. No official DRM-free or digital re-release is known. This launcher only reports SafeDisc - it never removes or bypasses it. Don't run 'replacement exe' files from forums: they are unverified and can carry malware.",
+  "Sources": [
+    "PCGamingWiki: SafeDisc (lists Rugby 08) - https://www.pcgamingwiki.com/wiki/SafeDisc",
+    "PCGamingWiki community: Rugby 2008 Widescreen Fix (dgVoodoo2 d3d8.dll)",
+    "therugbyforum.com: 'Customise resolution for Rugby 08 (PC)' and 'Custom screen resolution' threads (.pro hex layout)",
+    "Install listings (shouldiremoveit.com, oldgamesdownload.com): Rugby08.exe under Program Files\\EA SPORTS",
+    "therugbyforum.com: 'Rugby 08: .Exe anyone?' (start-up freeze, antivirus exceptions)"
+  ]
+}
