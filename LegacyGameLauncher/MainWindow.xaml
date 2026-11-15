@@ -5,7 +5,7 @@
         Title="Legacy Game Launcher" Height="820" Width="1240" MinWidth="960" MinHeight="620"
         FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13"
         ExtendsContentIntoTitleBar="True" WindowBackdropType="Mica" WindowCornerPreference="Round"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen" Icon="pack://application:,,,/Assets/app.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -14,7 +14,7 @@
 
         <ui:TitleBar Grid.Row="0" Title="Legacy Game Launcher">
             <ui:TitleBar.Icon>
-                <ui:SymbolIcon Symbol="Games24"/>
+                <ui:ImageIcon Source="pack://application:,,,/Assets/app.ico" Width="16" Height="16"/>
             </ui:TitleBar.Icon>
         </ui:TitleBar>
 

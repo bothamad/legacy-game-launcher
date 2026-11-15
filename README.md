@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🎮 Legacy Game Launcher
+<img src="docs/images/icon.png" alt="" width="96">
+
+# Legacy Game Launcher
 
 **Get Windows 7-era 32-bit DirectX games running properly on Windows 11.**
 

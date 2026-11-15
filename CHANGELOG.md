@@ -4,6 +4,9 @@ All notable changes to Legacy Game Launcher. Versions match the GitHub release t
 Earlier versions (0.1–0.4.3) were built before the project was on GitHub; their changes are listed here
 and included in the first GitHub release.
 
+## 0.8.1 - 2026-11-15
+- App icon: the launcher now has its own icon (exe, taskbar, title bar and Alt-Tab) instead of the generic one.
+
 ## 0.8.0 - 2026-11-15
 - New button layout **DirectInput / Logitech Rumblepad 2** (virtual DS4 output). Research on The Rugby Forum shows the
   PC version of Rugby 08 is laid out for a Logitech Rumblepad 2 - a DirectInput pad with the same numbering as a
