@@ -104,6 +104,17 @@ public sealed class ChangeRecord
     public override string ToString() => $"[{Group}] {When:yyyy-MM-dd HH:mm}  {Description}";
 }
 
+public sealed class CustomFileEntry
+{
+    public string RelativePath { get; set; } = "";
+    public string Source { get; set; } = "";
+    public string Sha256 { get; set; } = "";
+    public long Size { get; set; }
+    public DateTime Added { get; set; } = DateTime.Now;
+    public bool ReplacedOriginal { get; set; }
+    public override string ToString() => $"{RelativePath}   ({Size / 1024.0:0} KB, SHA-256 {Sha256[..Math.Min(12, Sha256.Length)]}…){(ReplacedOriginal ? "  - original backed up" : "")}";
+}
+
 public sealed class LaunchRecord
 {
     public DateTime Started { get; set; }
@@ -127,6 +138,8 @@ public sealed class GameEntry
     public InputWrapperSettings Input { get; set; } = new();
     public List<ChangeRecord> Changes { get; set; } = new();
     public List<LaunchRecord> Launches { get; set; } = new();
+    /// <summary>Files the user chose to copy into the game folder ("Your own files"), journaled under group "custom".</summary>
+    public List<CustomFileEntry> CustomFiles { get; set; } = new();
 
     public string GameDir => Path.GetDirectoryName(ExePath) ?? "";
     public override string ToString() => DisplayName;

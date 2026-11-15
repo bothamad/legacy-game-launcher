@@ -54,6 +54,7 @@ profile for a game - see [Adding games](#adding-games).
 | **PS4 / PS5 pad**: pause does nothing, **right stick** (sidestep) doesn't work | DirectInput sees the PlayStation layout (right stick on Z/Rz, Options = button 10); these games expect the Xbox 360 layout | Run [DS4Windows](https://github.com/Ryochan7/DS4Windows) (Xbox 360 emulation) and hide the real pad with HidHide; check with **Controllers → Live tester** |
 | Flicker, wrong speed or odd behaviour on a **120-165 Hz** monitor | Game picks the monitor's highest refresh rate | **Fixes → dgVoodoo2** (60 Hz cap + forced resolution on the Graphics tab) |
 | Stuck at 1024×768 / wrong resolution | Resolution is stored in the binary `.pro` profile | **Game config → Scan**, then set the resolution (backed up first) |
+| Want widescreen or a community mod | Needs extra files in the game folder | **Fixes → Your own files → Add a folder…** (backed up, one-click undo) |
 | Crash on alt-tab, or you want windowed / borderless | Exclusive full-screen Direct3D 8 | **Fixes → dgVoodoo2**, tick *Windowed* / *Borderless* on the Graphics tab |
 | Missing `d3dx9_xx.dll` / `xinput1_3.dll` etc. | June 2010 DirectX runtime not installed | **Overview → Legacy runtime dependencies** links to Microsoft's installer |
 | "Please insert the correct disc", or the game exits silently | Copy protection - SafeDisc's driver is disabled on Windows 10/11 | Shown on **Overview → Copy protection**. The launcher explains it but **never bypasses it** |
@@ -75,7 +76,8 @@ profile for a game - see [Adding games](#adding-games).
 
 **🩹 One-click fixes**
 dinputto8, dgVoodoo2 and DXVK, downloaded from each project's official GitHub release, verified against GitHub's
-SHA-256, installed with backup - and removable.
+SHA-256, installed with backup - and removable. **Your own files**: add a mod or fix you downloaded (files or a
+whole folder) - backed up, listed and undoable.
 
 **🛠️ Compatibility**
 Windows compatibility modes and flags, CPU core limit and priority applied *before* the game's code runs,

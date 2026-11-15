@@ -165,6 +165,7 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
             RenderOverview();
             FixLog.Clear();
             UpdateFixStatus();
+            UpdateCustomList();
             UpdateWrapperSourceInfo();
         }
         catch (Exception ex) { OverviewText.Text = "Could not inspect the exe: " + ex.Message; }

@@ -176,6 +176,23 @@
                                             </WrapPanel>
                                         </StackPanel>
                                     </GroupBox>
+                                    <GroupBox Header="Your own files (mods and fixes you downloaded)">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource Hint}" Text="Copy files you choose into the game folder - for example a widescreen fix or a mod. Anything replaced is backed up first and every file is listed in Changes &amp; undo, so Remove restores the game folder exactly. The game's own .exe is never replaced."/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                                <TextBlock Text="Place into subfolder" VerticalAlignment="Center" Width="150"/>
+                                                <TextBox x:Name="CustomSubfolder" Width="220"/>
+                                                <TextBlock Text="  (blank = next to the game's exe)" VerticalAlignment="Center" Style="{StaticResource Hint}" Margin="0"/>
+                                            </StackPanel>
+                                            <WrapPanel>
+                                                <ui:Button Content="Add files…" Icon="{ui:SymbolIcon DocumentAdd24}" Appearance="Primary" Click="CustomAddFiles_Click"/>
+                                                <ui:Button Content="Add a folder…" Icon="{ui:SymbolIcon FolderAdd24}" Click="CustomAddFolder_Click"/>
+                                                <ui:Button Content="Remove all (restore originals)" Icon="{ui:SymbolIcon ArrowUndo24}" Click="CustomRemove_Click"/>
+                                            </WrapPanel>
+                                            <ListBox x:Name="CustomList" MaxHeight="180" FontFamily="Cascadia Mono, Consolas" FontSize="12"/>
+                                            <TextBlock x:Name="CustomEmpty" Style="{StaticResource Hint}" Text="No files of your own added to this game."/>
+                                        </StackPanel>
+                                    </GroupBox>
                                     <TextBox x:Name="FixLog" Style="{StaticResource Mono}" MinHeight="90" Margin="0,0,0,12"/>
                                 </StackPanel>
                             </ScrollViewer>

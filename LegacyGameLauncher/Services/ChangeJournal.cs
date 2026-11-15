@@ -95,6 +95,7 @@ public static class ChangeJournal
         }
         if (group is null or "wrapper") { g.Wrapper.Installed = false; g.Wrapper.InstalledKind = ""; g.Wrapper.InstalledDlls.Clear(); }
         if (group is null or "input") { g.Input.Installed = false; g.Input.InstalledKind = ""; }
+        if (group is null or CustomFiles.Group) g.CustomFiles.Clear();
         return (true, string.Join("\n", log));
     }
 }

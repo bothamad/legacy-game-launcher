@@ -93,6 +93,50 @@ public partial class MainWindow
         }
     }
 
+    void UpdateCustomList()
+    {
+        if (_g == null || CustomList == null) return;
+        CustomList.ItemsSource = null;
+        CustomList.ItemsSource = _g.CustomFiles.OrderBy(c => c.RelativePath).ToList();
+        CustomList.Visibility = _g.CustomFiles.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        CustomEmpty.Visibility = _g.CustomFiles.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
+    }
+
+    async Task AddCustom(IEnumerable<string> files, string? folder)
+    {
+        if (_g == null) return;
+        try
+        {
+            var items = CustomFiles.Collect(files, folder, CustomSubfolder.Text);
+            if (items.Count > 200 && MessageBox.Show(this, $"Copy {items.Count} files into the game folder?", "Your own files", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
+            var (ok, log) = await CustomFiles.InstallAsync(_g, items, this);
+            FixLogLine((ok ? "✓ " : "✗ ") + log);
+        }
+        catch (Exception ex) { FixLogLine("✗ " + ex.Message); }
+        Save(); LoadChanges(); UpdateCustomList(); RenderOverview();
+    }
+
+    async void CustomAddFiles_Click(object sender, RoutedEventArgs e)
+    {
+        var dlg = new Microsoft.Win32.OpenFileDialog { Title = "Choose the files to copy into the game folder", Multiselect = true };
+        if (dlg.ShowDialog(this) == true) await AddCustom(dlg.FileNames, null);
+    }
+
+    async void CustomAddFolder_Click(object sender, RoutedEventArgs e)
+    {
+        var dlg = new Microsoft.Win32.OpenFolderDialog { Title = "Choose a folder - its contents are copied into the game folder (subfolders kept)" };
+        if (dlg.ShowDialog(this) == true) await AddCustom(Array.Empty<string>(), dlg.FolderName);
+    }
+
+    async void CustomRemove_Click(object sender, RoutedEventArgs e)
+    {
+        if (_g == null) return;
+        if (!_g.Changes.Any(c => c.Group == CustomFiles.Group)) { FixLogLine("No files of your own to remove."); return; }
+        await UndoGroup(CustomFiles.Group, null);
+        FixLogLine(UndoLog.Text);
+        UpdateCustomList();
+    }
+
     async void FixRemove_Click(object sender, RoutedEventArgs e)
     {
         if (_g == null) return;

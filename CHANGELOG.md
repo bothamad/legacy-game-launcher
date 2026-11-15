@@ -4,6 +4,12 @@ All notable changes to Legacy Game Launcher. Versions match the GitHub release t
 Earlier versions (0.1–0.4.3) were built before the project was on GitHub; their changes are listed here
 and included in the first GitHub release.
 
+## 0.6.0 - 2026-11-15
+- **Your own files** (Fixes tab): copy files or a whole folder you choose (a mod, a widescreen fix, a config pack)
+  into the game folder, optionally into a subfolder. Anything replaced is backed up, every file is journaled with
+  its SHA-256, and *Remove all* restores the folder exactly. The game's own `.exe` is never replaced, and nothing
+  can be written outside the game folder.
+
 ## 0.5.0 - 2026-11-15
 - **Fixes tab**: one-click *Download & apply* / *Remove* for dinputto8 (DirectInput crash fix), dgVoodoo2 and DXVK.
   Downloads come only from each project's own GitHub release, are checked against GitHub's published SHA-256,
