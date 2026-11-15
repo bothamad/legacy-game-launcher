@@ -29,6 +29,8 @@ API, copy-protection markers) against your actual exe instead of trusting the pr
 | Resolution stored as two **little-endian 16-bit values, width then height** (1024x768 = `00 04 00 03`, 1920x1080 = `80 07 38 04`). The offset differs between profiles (users report 636, 638 and 658). Changing display options in the game can reset it to 1024x768. | High | therugbyforum.com (several users confirmed) |
 | Listed as using **SafeDisc** (version not given) | Medium | PCGamingWiki SafeDisc page |
 | Freezes at the start-up screen, sometimes caused by antivirus | Anecdotal | therugbyforum.com |
+| PC controls are laid out for a **Logitech Rumblepad 2** (DirectInput): works "with no need to remap anything"; an Xbox 360 pad gets mixed-up buttons (sprint, button 8, lands on Start) | Medium (several forum users) | therugbyforum.com "PC Rugby 08 advice" |
+| On PC, Start/Back aren't used - pause with **Esc**; special moves are **L1 + a face button** instead of the right stick | Medium (forum review) | therugbyforum.com "2008 impressions" |
 
 ## Changes made to the launcher from this research
 

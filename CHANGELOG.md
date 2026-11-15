@@ -4,6 +4,13 @@ All notable changes to Legacy Game Launcher. Versions match the GitHub release t
 Earlier versions (0.1–0.4.3) were built before the project was on GitHub; their changes are listed here
 and included in the first GitHub release.
 
+## 0.8.0 - 2026-11-15
+- New button layout **DirectInput / Logitech Rumblepad 2** (virtual DS4 output). Research on The Rugby Forum shows the
+  PC version of Rugby 08 is laid out for a Logitech Rumblepad 2 - a DirectInput pad with the same numbering as a
+  PS4 pad (face buttons 1-4, L2/R2 = buttons 7/8, right stick on Z/Rz, D-pad as a hat). An Xbox 360 layout mixes
+  buttons up (e.g. sprint on Start). This layout makes DS4Windows present a virtual DS4 to the game, with no remaps.
+- Rugby 08 profile and GAME_NOTES: on PC, pause is Esc and special moves are L1 + a face button.
+
 ## 0.7.1 - 2026-11-15
 - Button layout: **Touchpad doesn't move the mouse** (on by default) - DS4Windows' default turns the PS4 touchpad
   into a mouse, which moved the keyboard player on EA's controller-select screen and could leave the cursor stuck.

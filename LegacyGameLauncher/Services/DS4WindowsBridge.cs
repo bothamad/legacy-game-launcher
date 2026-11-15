@@ -25,18 +25,22 @@ public static class DS4WindowsBridge
 {
     public const string Group = "padlayout";
 
-    /// <summary>Layout presets: DS4 face button → Xbox 360 output button name as DS4Windows writes it.</summary>
-    public static readonly Dictionary<string, (string Label, Dictionary<string, string>? Map)> Presets = new()
+    /// <summary>
+    /// Layout presets: DS4 face button → Xbox 360 output button name as DS4Windows writes it, and optionally a
+    /// different virtual output device (OutContType name, e.g. ViiperDS4).
+    /// </summary>
+    public static readonly Dictionary<string, (string Label, Dictionary<string, string>? Map, string? Output)> Presets = new()
     {
-        ["Default"] = ("Xbox layout (DS4Windows default: Cross = A / button 1)", null),
-        ["PlayStation"] = ("PlayStation-direct layout (Square = 1, Cross = 2, Circle = 3, Triangle = 4)", new()
+        ["Default"] = ("Xbox layout (DS4Windows default: Cross = A / button 1)", null, null),
+        ["DirectInput"] = ("DirectInput / Logitech Rumblepad 2 layout - virtual DS4 (best for Rugby 08 / Cricket 07 PC)", new(), "ViiperDS4"),
+        ["PlayStation"] = ("PlayStation-direct face buttons on the Xbox output (Square = 1, Cross = 2, Circle = 3, Triangle = 4)", new()
         {
             ["Square"] = "A Button", ["Cross"] = "B Button", ["Circle"] = "X Button", ["Triangle"] = "Y Button",
-        }),
-        ["SwapCrossCircle"] = ("Swap Cross and Circle only", new()
+        }, null),
+        ["SwapCrossCircle"] = ("Swap Cross and Circle only (Xbox output)", new()
         {
             ["Cross"] = "B Button", ["Circle"] = "A Button",
-        }),
+        }, null),
     };
 
     public static DS4WindowsInstall? Find()
@@ -78,13 +82,20 @@ public static class DS4WindowsBridge
     };
 
     /// <summary>Copy of the base profile with the chosen mapping changes (face buttons, D-pad) and touchpad option.</summary>
-    public static string BuildProfileXml(DS4WindowsInstall inst, Dictionary<string, string> faceMap, bool touchpadOff = false, bool dpadAsStick = false)
+    public static string BuildProfileXml(DS4WindowsInstall inst, Dictionary<string, string> faceMap, bool touchpadOff = false, bool dpadAsStick = false, string? output = null)
     {
         var map = new Dictionary<string, string>(faceMap);
         if (dpadAsStick) foreach (var kv in DpadToLeftStick) map[kv.Key] = kv.Value;
         var doc = new XmlDocument { PreserveWhitespace = false };
         doc.Load(Path.Combine(inst.ProfilesDir, inst.BaseProfile + ".xml"));
         var root = doc.DocumentElement ?? throw new InvalidOperationException("The DS4Windows profile is empty.");
+        if (output != null)
+        {
+            // Virtual output device for this game, e.g. ViiperDS4: the game then sees a DS4 with DirectInput's
+            // classic numbering (buttons 1-14, right stick on Z/Rz, L2/R2 as buttons 7/8, D-pad as a hat).
+            var od = root.SelectSingleNode("OutputContDevice") ?? root.AppendChild(doc.CreateElement("OutputContDevice"))!;
+            od.InnerText = output;
+        }
         if (touchpadOff)
         {
             // TouchpadOutMode.None - the touchpad no longer moves the Windows mouse (DS4Windows' default is Mouse).
@@ -168,13 +179,13 @@ public static class DS4WindowsBridge
         if (inst == null) return (false, "DS4Windows settings not found. Start DS4Windows once, then try again.");
         if (!Presets.TryGetValue(preset, out var p)) return (false, "Unknown layout.");
         var face = p.Map ?? new Dictionary<string, string>();
-        if (face.Count == 0 && !g.PadTouchpadOff && !g.PadDpadAsStick) return await RemoveAsync(g, owner);
+        if (face.Count == 0 && p.Output == null && !g.PadTouchpadOff && !g.PadDpadAsStick) return await RemoveAsync(g, owner);
 
         var name = ProfileName(g);
         var log = new List<string>();
         AppPaths.Ensure();
         var stagedProfile = Path.Combine(AppPaths.Staging, $"ds4w-{Guid.NewGuid():N}.xml");
-        File.WriteAllText(stagedProfile, BuildProfileXml(inst, face, g.PadTouchpadOff, g.PadDpadAsStick));
+        File.WriteAllText(stagedProfile, BuildProfileXml(inst, face, g.PadTouchpadOff, g.PadDpadAsStick, p.Output));
 
         var restartExe = await StopAsync(inst);
         if (restartExe != null) log.Add("Closed DS4Windows to update its settings.");
@@ -195,6 +206,7 @@ public static class DS4WindowsBridge
             g.PadLayout = preset;
             g.PadLayoutDs4wDir = inst.SettingsDir;
             var changes = face.Select(kv => $"{kv.Key} → {kv.Value.Replace(" Button", "")}").ToList();
+            if (p.Output == "ViiperDS4") changes.Insert(0, "output as a virtual DS4 (DirectInput numbering: Square 1, Cross 2, Circle 3, Triangle 4, L2/R2 = 7/8, Share 9, Options 10)");
             if (g.PadDpadAsStick) changes.Add("D-pad → left stick");
             if (g.PadTouchpadOff) changes.Add("touchpad no longer moves the mouse");
             log.Add($"Created DS4Windows profile \"{name}\" from \"{inst.BaseProfile}\" with: {string.Join(", ", changes)}.");
