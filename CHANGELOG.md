@@ -4,6 +4,14 @@ All notable changes to Legacy Game Launcher. Versions match the GitHub release t
 Earlier versions (0.1–0.4.3) were built before the project was on GitHub; their changes are listed here
 and included in the first GitHub release.
 
+## 0.9.0 - 2026-11-15
+- **Fix: controller not detected in-game with the DirectInput / Rumblepad 2 layout.** DS4Windows' Auto Profile switched
+  only after the game's window appeared, unplugging the virtual Xbox pad and plugging in the virtual DS4 ~3 seconds
+  later - after the game had already looked for controllers. For layouts that change the virtual controller, the
+  launcher now switches DS4Windows to the game's profile **before** starting the game, waits until DS4Windows reports
+  the virtual pad plugged in, and switches back after the game exits. Stale Auto Profile entries for such games are removed.
+- **Game icons**: each game's own icon (from its exe) in the library list and next to the game title.
+
 ## 0.8.1 - 2026-11-15
 - App icon: the launcher now has its own icon (exe, taskbar, title bar and Alt-Tab) instead of the generic one.
 

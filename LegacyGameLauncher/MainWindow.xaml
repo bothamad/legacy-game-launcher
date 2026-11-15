@@ -5,7 +5,12 @@
         Title="Legacy Game Launcher" Height="820" Width="1240" MinWidth="960" MinHeight="620"
         FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13"
         ExtendsContentIntoTitleBar="True" WindowBackdropType="Mica" WindowCornerPreference="Round"
-        WindowStartupLocation="CenterScreen" Icon="pack://application:,,,/Assets/app.ico">
+        WindowStartupLocation="CenterScreen" Icon="pack://application:,,,/Assets/app.ico"
+        xmlns:svc="clr-namespace:LegacyGameLauncher.Services">
+    <ui:FluentWindow.Resources>
+        <svc:ExeIconConverter x:Key="ExeIcon"/>
+        <svc:NoIconVisibilityConverter x:Key="NoIconVisible"/>
+    </ui:FluentWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -60,10 +65,15 @@
                             <DataTemplate>
                                 <Grid Margin="0,6">
                                     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                    <Border Width="36" Height="36" CornerRadius="6" Margin="0,0,10,0" VerticalAlignment="Center"
-                                            Background="{DynamicResource AccentFillColorDefaultBrush}">
-                                        <ui:SymbolIcon Symbol="Games24" FontSize="18" Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
-                                    </Border>
+                                    <Grid Width="36" Height="36" Margin="0,0,10,0" VerticalAlignment="Center">
+                                        <!-- Fallback tile when the exe has no icon of its own -->
+                                        <Border CornerRadius="6" Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                                Visibility="{Binding ExePath, Converter={StaticResource NoIconVisible}}">
+                                            <ui:SymbolIcon Symbol="Games24" FontSize="18" Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+                                        </Border>
+                                        <Image Source="{Binding ExePath, Converter={StaticResource ExeIcon}, ConverterParameter=48}"
+                                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    </Grid>
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
                                         <TextBlock Text="{Binding ExePath}" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
@@ -92,13 +102,15 @@
                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1">
                         <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                            <StackPanel VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <Image x:Name="GameIcon" Width="56" Height="56" Margin="0,0,16,0" VerticalAlignment="Center"
+                                   RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock x:Name="GameTitle" FontSize="26" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
                                 <TextBlock x:Name="LaunchState" Style="{StaticResource Hint}" Margin="0,4,0,0"
                                            Text="Launch applies the compatibility settings, starts the game and records everything on the Launch tab."/>
                             </StackPanel>
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                                 <ui:Button x:Name="LaunchButton" Content="Launch" Icon="{ui:SymbolIcon Play24}" Appearance="Primary"
                                            FontSize="16" FontWeight="SemiBold" Padding="28,10" Margin="0" Click="Launch_Click"/>
                             </StackPanel>

@@ -142,6 +142,8 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
         int version = ++_loadVersion;
         LoadCompatUi(); LoadWrapperUi(); LoadPadUi(); LoadHistory(); LoadChanges(); LoadLayoutUi();
         GameTitle.Text = g.DisplayName;
+        GameIcon.Source = GameIcons.Get(g.ExePath, 64);
+        GameIcon.Visibility = GameIcon.Source == null ? Visibility.Collapsed : Visibility.Visible;
         OverviewText.Text = "Inspecting game files…";
         DrmText.Text = ""; DepGrid.ItemsSource = null; DepAdvice.Text = "";
         ConfigGrid.ItemsSource = null; RegistryGrid.ItemsSource = null; ConfigEditor.Text = ""; ConfigDetected.Text = "";

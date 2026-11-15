@@ -192,7 +192,9 @@ public static class DS4WindowsBridge
         try
         {
             var stagedAuto = Path.Combine(AppPaths.Staging, $"ds4w-auto-{Guid.NewGuid():N}.xml");
-            File.WriteAllText(stagedAuto, BuildAutoProfilesXml(inst, g.ExePath, name));
+            // Output-changing layouts are switched by the launcher before launch (see PrepareForLaunchAsync);
+            // an Auto Profile would re-plug the virtual pad after the game has started, so it's removed for those.
+            File.WriteAllText(stagedAuto, BuildAutoProfilesXml(inst, g.ExePath, p.Output != null ? null : name));
             var ops = new List<FileOp>();
             var target = Path.Combine(inst.ProfilesDir, name + ".xml");
             var rec = ChangeJournal.PlanPlaceFile(g, Group, stagedProfile, target, ops, $"DS4Windows profile \"{name}\"");
@@ -210,7 +212,9 @@ public static class DS4WindowsBridge
             if (g.PadDpadAsStick) changes.Add("D-pad → left stick");
             if (g.PadTouchpadOff) changes.Add("touchpad no longer moves the mouse");
             log.Add($"Created DS4Windows profile \"{name}\" from \"{inst.BaseProfile}\" with: {string.Join(", ", changes)}.");
-            log.Add($"Added an Auto Profile so DS4Windows uses it while {Path.GetFileName(g.ExePath)} runs, and switches back afterwards.");
+            log.Add(p.Output != null
+                ? $"This layout changes DS4Windows' virtual controller, so the launcher switches DS4Windows to it just before starting {Path.GetFileName(g.ExePath)} (and back afterwards). Start the game from the launcher to use it."
+                : $"Added an Auto Profile so DS4Windows uses it while {Path.GetFileName(g.ExePath)} runs, and switches back afterwards.");
         }
         finally
         {
@@ -244,6 +248,111 @@ public static class DS4WindowsBridge
         g.PadLayout = "Default";
         if (restartExe != null) { Start(restartExe); log.Add("Restarted DS4Windows."); }
         return (ok, string.Join("\n", log));
+    }
+
+    // ---------------------------------------------------------------- switching around a launch
+
+    /// <summary>
+    /// Layouts that change DS4Windows' virtual output device (e.g. to a virtual DS4) can't use Auto Profiles: DS4Windows
+    /// switches only after the game's window appears, unplugging and re-plugging the virtual pad a few seconds later -
+    /// after the game has already looked for controllers. Those are switched by the launcher before the game starts.
+    /// </summary>
+    public static bool NeedsPreLaunchSwitch(GameEntry g) =>
+        g.Changes.Any(c => c.Group == Group) && Presets.TryGetValue(g.PadLayout, out var p) && p.Output != null;
+
+    public sealed class SwitchToken
+    {
+        public DS4WindowsInstall Inst = new();
+        public string? Exe;
+        public Dictionary<string, string> Previous = new();
+    }
+
+    static Dictionary<string, string> SetControllerProfiles(DS4WindowsInstall inst, Func<string, string, string> pick)
+    {
+        var file = Path.Combine(inst.SettingsDir, "Profiles.xml");
+        var doc = new XmlDocument(); doc.Load(file);
+        var before = new Dictionary<string, string>();
+        for (int i = 1; i <= 8; i++)
+        {
+            if (doc.DocumentElement?.SelectSingleNode("Controller" + i) is not XmlNode n) continue;
+            before[n.Name] = n.InnerText;
+            n.InnerText = pick(n.Name, n.InnerText);
+        }
+        File.WriteAllText(file, ToUtf8(doc));
+        return before;
+    }
+
+    static string LogFile(DS4WindowsInstall inst) => Path.Combine(inst.SettingsDir, "Logs", "ds4windows_log.txt");
+
+    /// <summary>Waits for DS4Windows to log that a virtual controller was plugged in after <paramref name="since"/>.</summary>
+    static async Task<bool> WaitForVirtualPadAsync(DS4WindowsInstall inst, DateTime since, TimeSpan timeout)
+    {
+        var until = DateTime.Now + timeout;
+        while (DateTime.Now < until)
+        {
+            try
+            {
+                using var fs = new FileStream(LogFile(inst), FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+                using var sr = new StreamReader(fs);
+                foreach (var line in sr.ReadToEnd().Split('\n').Reverse().Take(80))
+                {
+                    if (!line.Contains("Plugging in virtual", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (DateTime.TryParse(line.Split('|')[0], out var t) && t >= since.AddSeconds(-1)) return true;
+                }
+            }
+            catch { }
+            await Task.Delay(400);
+        }
+        return false;
+    }
+
+    /// <summary>Before launch: make DS4Windows use the game's profile and wait until its virtual pad is plugged in.</summary>
+    public static async Task<SwitchToken?> PrepareForLaunchAsync(GameEntry g, Action<string> log)
+    {
+        var inst = Find();
+        if (inst == null) { log("Button layout: DS4Windows settings not found - skipped."); return null; }
+        if (!inst.Running) { log("Button layout: DS4Windows isn't running - start it before launching to use the game's layout."); return null; }
+        var name = ProfileName(g);
+        if (!File.Exists(Path.Combine(inst.ProfilesDir, name + ".xml"))) { log($"Button layout: profile \"{name}\" is missing - re-apply it on the Controllers tab."); return null; }
+
+        log($"Button layout: switching DS4Windows to \"{name}\" before the game starts (the virtual controller is re-plugged)…");
+        var token = new SwitchToken { Inst = inst };
+        token.Exe = await StopAsync(inst);
+        // An Auto Profile for this exe (left by an older version) would re-plug the pad after the game starts.
+        try
+        {
+            if (File.Exists(inst.AutoProfilesFile) && File.ReadAllText(inst.AutoProfilesFile).Contains(g.ExePath, StringComparison.OrdinalIgnoreCase))
+            {
+                File.WriteAllText(inst.AutoProfilesFile, BuildAutoProfilesXml(inst, g.ExePath, null));
+                log("Button layout: removed this game's DS4Windows Auto Profile (it would re-plug the pad mid-start).");
+            }
+        }
+        catch { }
+        token.Previous = SetControllerProfiles(inst, (_, _) => name);
+        var started = DateTime.Now;
+        Start(token.Exe);
+        if (await WaitForVirtualPadAsync(inst, started, TimeSpan.FromSeconds(30)))
+        {
+            await Task.Delay(1500); // let Windows finish adding the device
+            log("Button layout: DS4Windows is using the game's profile and the virtual controller is plugged in.");
+        }
+        else log("Button layout: WARNING - DS4Windows didn't report a plugged-in virtual controller within 30 s. Is the pad connected?");
+        return token;
+    }
+
+    /// <summary>After the game exits: put DS4Windows back on the profiles it used before.</summary>
+    public static async Task RestoreAfterLaunchAsync(SwitchToken? token, Action<string> log)
+    {
+        if (token == null) return;
+        try
+        {
+            var running = Process.GetProcessesByName("DS4Windows").Length > 0;
+            var exe = running ? await StopAsync(token.Inst) ?? token.Exe : null;
+            SetControllerProfiles(token.Inst, (node, current) => token.Previous.TryGetValue(node, out var v) ? v : current);
+            if (running) Start(exe);
+            log("Button layout: DS4Windows is back on your normal profile.");
+        }
+        catch (Exception ex) { log("Button layout: couldn't restore DS4Windows' profile: " + ex.Message); }
     }
 
     /// <summary>For "Undo all": drop the auto-profile entry (DS4Windows picks it up on its next start).</summary>

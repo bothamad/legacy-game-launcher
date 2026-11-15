@@ -466,6 +466,7 @@ public partial class MainWindow
         TabHost.SelectedIndex = TabHost.Items.Count - 2; // "Launch log"
         LaunchLog.Clear(); _launchLines.Clear();
         string? mountedIso = null;
+        DS4WindowsBridge.SwitchToken? padSwitch = null;
         try
         {
             ReadCompatUi(); ReadWrapperUi();
@@ -523,6 +524,11 @@ public partial class MainWindow
                 AffinityMask = cpu ? CompatLayers.AffinityMask(g.Compat.CoreLimit) : 0, Priority = cpu ? g.Compat.Priority : "Normal",
             };
             mountedIso = await MountForLaunch(g);
+            if (DS4WindowsBridge.NeedsPreLaunchSwitch(g))
+            {
+                LaunchState.Text = "Switching DS4Windows to the game's button layout…";
+                padSwitch = await DS4WindowsBridge.PrepareForLaunchAsync(g, Log);
+            }
             var launchStarted = DateTime.Now;
             bool needsAdmin = (g.Compat.RunAsAdmin || _scan?.Exe.ManifestRequiresAdmin == true) && !Environment.IsPrivilegedProcess;
             LaunchResult res;
@@ -542,6 +548,7 @@ public partial class MainWindow
         catch (Exception ex) { Log("ERROR: " + ex); }
         finally
         {
+            if (padSwitch != null) await DS4WindowsBridge.RestoreAfterLaunchAsync(padSwitch, Log);
             if (mountedIso != null && g.Compat.UnmountAfterExit)
             {
                 try { await Task.Run(() => DiscImage.Unmount(mountedIso)); Log("Disc image unmounted (the launcher had mounted it)."); }
