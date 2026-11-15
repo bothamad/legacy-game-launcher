@@ -10,6 +10,7 @@ Built for **EA Sports Cricket 07** and **EA Sports Rugby 08** - and any other ol
 [![Downloads](https://img.shields.io/github/downloads/bothamad/legacy-game-launcher/total?style=for-the-badge)](https://github.com/bothamad/legacy-game-launcher/releases)
 ![Windows 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?style=for-the-badge&logo=windows11&logoColor=white)
 ![.NET 8](https://img.shields.io/badge/.NET-8-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+[![Support on Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20this%20project-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/drquashi)
 
 <img src="docs/images/fixes.png" alt="Legacy Game Launcher - Fixes tab" width="860">
 
@@ -163,6 +164,13 @@ Output: `publish\LegacyGameLauncher.exe` (single file, self-contained, about 65 
 Put a `*.json` profile in `%LocalAppData%\LegacyGameLauncher\profiles\` (the built-in profiles are exported
 there as `example-*.json.txt` to copy). A profile with the same `Id` as a built-in one replaces it. Add your exe's
 SHA-256 (shown on the Overview tab) for an exact match. Pull requests with profiles for more games are welcome.
+
+## Support the project
+
+Legacy Game Launcher is free. If it got your old games running again and you'd like to say thanks,
+you can buy me a coffee on Ko-fi:
+
+<a href="https://ko-fi.com/drquashi"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white" alt="Support on Ko-fi"></a>
 
 ## Credits
 
