@@ -4,6 +4,13 @@ All notable changes to Legacy Game Launcher. Versions match the GitHub release t
 Earlier versions (0.1–0.4.3) were built before the project was on GitHub; their changes are listed here
 and included in the first GitHub release.
 
+## 0.7.0 - 2026-11-15
+- **Per-game button layout for DS4Windows** (Controllers tab): choose *Xbox layout*, *PlayStation-direct layout*
+  (Square = 1, Cross = 2, Circle = 3, Triangle = 4) or *Swap Cross and Circle*. The launcher creates a DS4Windows
+  profile for the game - a copy of your usual profile with only the face buttons changed - plus an Auto Profile,
+  so DS4Windows switches while the game runs and back afterwards. DS4Windows is closed and restarted around the
+  change (it only reads Auto Profiles at start-up). *Back to default* removes both; other games' entries are untouched.
+
 ## 0.6.0 - 2026-11-15
 - **Your own files** (Fixes tab): copy files or a whole folder you choose (a mod, a widescreen fix, a config pack)
   into the game folder, optionally into a subfolder. Anything replaced is backed up, every file is journaled with

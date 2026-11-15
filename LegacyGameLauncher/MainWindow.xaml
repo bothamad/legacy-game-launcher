@@ -391,6 +391,20 @@
                                             <TextBox x:Name="PadAdvice" Style="{StaticResource Info}"/>
                                         </StackPanel>
                                     </GroupBox>
+                                    <GroupBox Header="Button layout for this game (DS4Windows)">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource Hint}" Text="For PlayStation pads used through DS4Windows. Pick the layout this game expects and press Apply: the launcher creates a DS4Windows profile for the game (a copy of your usual one with only the face buttons changed) and an Auto Profile, so DS4Windows switches to it while the game runs and back afterwards. If a button does the wrong thing in-game (e.g. the game's X action is on Circle), try PlayStation-direct."/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                                <TextBlock Text="Layout" VerticalAlignment="Center" Width="80"/>
+                                                <ComboBox x:Name="LayoutBox" Width="460"/>
+                                            </StackPanel>
+                                            <WrapPanel>
+                                                <ui:Button Content="Apply" Icon="{ui:SymbolIcon Checkmark24}" Appearance="Primary" Click="LayoutApply_Click"/>
+                                                <ui:Button Content="Back to default" Icon="{ui:SymbolIcon ArrowUndo24}" Click="LayoutRemove_Click"/>
+                                            </WrapPanel>
+                                            <TextBlock x:Name="LayoutStatus" TextWrapping="Wrap" Style="{StaticResource Hint}"/>
+                                        </StackPanel>
+                                    </GroupBox>
                                     <GroupBox Header="Live tester - what an old DirectInput game sees">
                                         <StackPanel>
                                             <WrapPanel>

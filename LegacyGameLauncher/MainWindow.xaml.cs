@@ -140,7 +140,7 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
         if (GameList.SelectedItem is not GameEntry g) return;
         _g = g;
         int version = ++_loadVersion;
-        LoadCompatUi(); LoadWrapperUi(); LoadPadUi(); LoadHistory(); LoadChanges();
+        LoadCompatUi(); LoadWrapperUi(); LoadPadUi(); LoadHistory(); LoadChanges(); LoadLayoutUi();
         GameTitle.Text = g.DisplayName;
         OverviewText.Text = "Inspecting game files…";
         DrmText.Text = ""; DepGrid.ItemsSource = null; DepAdvice.Text = "";

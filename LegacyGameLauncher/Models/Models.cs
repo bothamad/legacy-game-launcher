@@ -140,6 +140,9 @@ public sealed class GameEntry
     public List<LaunchRecord> Launches { get; set; } = new();
     /// <summary>Files the user chose to copy into the game folder ("Your own files"), journaled under group "custom".</summary>
     public List<CustomFileEntry> CustomFiles { get; set; } = new();
+    /// <summary>DS4Windows face-button layout for this game: Default, PlayStation, SwapCrossCircle.</summary>
+    public string PadLayout { get; set; } = "Default";
+    public string PadLayoutDs4wDir { get; set; } = "";
 
     public string GameDir => Path.GetDirectoryName(ExePath) ?? "";
     public override string ToString() => DisplayName;
