@@ -143,6 +143,10 @@ public sealed class GameEntry
     /// <summary>DS4Windows face-button layout for this game: Default, PlayStation, SwapCrossCircle.</summary>
     public string PadLayout { get; set; } = "Default";
     public string PadLayoutDs4wDir { get; set; } = "";
+    /// <summary>In the game's DS4Windows profile: stop the touchpad moving the Windows mouse.</summary>
+    public bool PadTouchpadOff { get; set; } = true;
+    /// <summary>In the game's DS4Windows profile: D-pad sends left-stick directions.</summary>
+    public bool PadDpadAsStick { get; set; }
 
     public string GameDir => Path.GetDirectoryName(ExePath) ?? "";
     public override string ToString() => DisplayName;

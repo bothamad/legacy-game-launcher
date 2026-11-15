@@ -72,12 +72,25 @@ public static class DS4WindowsBridge
         return "LGL - " + (safe.Length > 0 ? safe : "Game");
     }
 
-    /// <summary>Copy of the base profile with only the face-button mapping replaced.</summary>
-    public static string BuildProfileXml(DS4WindowsInstall inst, Dictionary<string, string> map)
+    static readonly Dictionary<string, string> DpadToLeftStick = new()
     {
+        ["DpadUp"] = "Left Y-Axis-", ["DpadDown"] = "Left Y-Axis+", ["DpadLeft"] = "Left X-Axis-", ["DpadRight"] = "Left X-Axis+",
+    };
+
+    /// <summary>Copy of the base profile with the chosen mapping changes (face buttons, D-pad) and touchpad option.</summary>
+    public static string BuildProfileXml(DS4WindowsInstall inst, Dictionary<string, string> faceMap, bool touchpadOff = false, bool dpadAsStick = false)
+    {
+        var map = new Dictionary<string, string>(faceMap);
+        if (dpadAsStick) foreach (var kv in DpadToLeftStick) map[kv.Key] = kv.Value;
         var doc = new XmlDocument { PreserveWhitespace = false };
         doc.Load(Path.Combine(inst.ProfilesDir, inst.BaseProfile + ".xml"));
         var root = doc.DocumentElement ?? throw new InvalidOperationException("The DS4Windows profile is empty.");
+        if (touchpadOff)
+        {
+            // TouchpadOutMode.None - the touchpad no longer moves the Windows mouse (DS4Windows' default is Mouse).
+            var tp = root.SelectSingleNode("TouchpadOutputMode") ?? root.AppendChild(doc.CreateElement("TouchpadOutputMode"))!;
+            tp.InnerText = "None";
+        }
         var control = root.SelectSingleNode("Control") ?? root.AppendChild(doc.CreateElement("Control"))!;
         var button = control.SelectSingleNode("Button") ?? control.AppendChild(doc.CreateElement("Button"))!;
         foreach (var (ds4, x360) in map)
@@ -154,13 +167,14 @@ public static class DS4WindowsBridge
         var inst = Find();
         if (inst == null) return (false, "DS4Windows settings not found. Start DS4Windows once, then try again.");
         if (!Presets.TryGetValue(preset, out var p)) return (false, "Unknown layout.");
-        if (p.Map == null) return await RemoveAsync(g, owner);
+        var face = p.Map ?? new Dictionary<string, string>();
+        if (face.Count == 0 && !g.PadTouchpadOff && !g.PadDpadAsStick) return await RemoveAsync(g, owner);
 
         var name = ProfileName(g);
         var log = new List<string>();
         AppPaths.Ensure();
         var stagedProfile = Path.Combine(AppPaths.Staging, $"ds4w-{Guid.NewGuid():N}.xml");
-        File.WriteAllText(stagedProfile, BuildProfileXml(inst, p.Map));
+        File.WriteAllText(stagedProfile, BuildProfileXml(inst, face, g.PadTouchpadOff, g.PadDpadAsStick));
 
         var restartExe = await StopAsync(inst);
         if (restartExe != null) log.Add("Closed DS4Windows to update its settings.");
@@ -180,7 +194,10 @@ public static class DS4WindowsBridge
             if (rec != null) g.Changes.Add(rec);
             g.PadLayout = preset;
             g.PadLayoutDs4wDir = inst.SettingsDir;
-            log.Add($"Created DS4Windows profile \"{name}\" from \"{inst.BaseProfile}\" with: {string.Join(", ", p.Map.Select(kv => $"{kv.Key} → {kv.Value.Replace(" Button", "")}"))}.");
+            var changes = face.Select(kv => $"{kv.Key} → {kv.Value.Replace(" Button", "")}").ToList();
+            if (g.PadDpadAsStick) changes.Add("D-pad → left stick");
+            if (g.PadTouchpadOff) changes.Add("touchpad no longer moves the mouse");
+            log.Add($"Created DS4Windows profile \"{name}\" from \"{inst.BaseProfile}\" with: {string.Join(", ", changes)}.");
             log.Add($"Added an Auto Profile so DS4Windows uses it while {Path.GetFileName(g.ExePath)} runs, and switches back afterwards.");
         }
         finally

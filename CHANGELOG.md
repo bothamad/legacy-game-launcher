@@ -4,6 +4,11 @@ All notable changes to Legacy Game Launcher. Versions match the GitHub release t
 Earlier versions (0.1–0.4.3) were built before the project was on GitHub; their changes are listed here
 and included in the first GitHub release.
 
+## 0.7.1 - 2026-11-15
+- Button layout: **Touchpad doesn't move the mouse** (on by default) - DS4Windows' default turns the PS4 touchpad
+  into a mouse, which moved the keyboard player on EA's controller-select screen and could leave the cursor stuck.
+- Button layout: **D-pad acts as the left stick** - for games that ignore the D-pad (Rugby 08 menus and controller select).
+
 ## 0.7.0 - 2026-11-15
 - **Per-game button layout for DS4Windows** (Controllers tab): choose *Xbox layout*, *PlayStation-direct layout*
   (Square = 1, Cross = 2, Circle = 3, Triangle = 4) or *Swap Cross and Circle*. The launcher creates a DS4Windows

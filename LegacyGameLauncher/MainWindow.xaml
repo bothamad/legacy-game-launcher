@@ -398,6 +398,8 @@
                                                 <TextBlock Text="Layout" VerticalAlignment="Center" Width="80"/>
                                                 <ComboBox x:Name="LayoutBox" Width="460"/>
                                             </StackPanel>
+                                            <CheckBox x:Name="LayoutTouchpadOff" Content="Touchpad doesn't move the mouse while this game runs (recommended)"/>
+                                            <CheckBox x:Name="LayoutDpadStick" Content="D-pad acts as the left stick (if the game ignores the D-pad)"/>
                                             <WrapPanel>
                                                 <ui:Button Content="Apply" Icon="{ui:SymbolIcon Checkmark24}" Appearance="Primary" Click="LayoutApply_Click"/>
                                                 <ui:Button Content="Back to default" Icon="{ui:SymbolIcon ArrowUndo24}" Click="LayoutRemove_Click"/>
