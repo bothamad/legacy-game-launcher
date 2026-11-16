@@ -4,6 +4,15 @@ All notable changes to Legacy Game Launcher. Versions match the GitHub release t
 Earlier versions (0.1–0.4.3) were built before the project was on GitHub; their changes are listed here
 and included in the first GitHub release.
 
+## 0.10.0 - 2026-11-16
+- **Mods tab** - a per-game mod library: import a mod from a .zip or folder, switch it on/off. On copies it into the
+  game folder and backs up what it replaces; off restores the originals exactly. Mods that change the same file can't
+  be on together. Nothing in a mod is ever run; the game exe is never replaced.
+- **Easy mode** (default) with a new **Home** tab: plain-language status, one-click *Apply recommended settings*,
+  *Undo everything* and tips for the game. Only Home, Mods, Fixes and Launch log are shown. **Advanced mode**
+  (switch in the sidebar) shows every tab.
+- Rugby 08: tested controller setup recorded - PS4 pad plugged in directly, no DS4Windows, no dinputto8.
+
 ## 0.9.1 - 2026-11-15
 - Button layout: **Touchpad left / right click = keyboard ← / →** - on Rugby 08's team-select screen the game moves
   controllers with the keyboard arrows. The touchpad works as buttons (so it no longer moves the mouse) and clicking
