@@ -33,6 +33,7 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
         Loaded += (_, _) => Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);
         _lib = LibraryStore.Load();
         InitUpdates();
+        Loaded += (_, _) => ApplyMode();
         foreach (var (label, _) in OsLabels) OsModeBox.Items.Add(label);
         CoreBox.Items.Add("No limit (all cores)");
         foreach (var n in new[] { 1, 2, 3, 4, 6, 8 }.Where(n => n < Environment.ProcessorCount)) CoreBox.Items.Add($"{n} core{(n > 1 ? "s" : "")}");
@@ -168,6 +169,8 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
             FixLog.Clear();
             UpdateFixStatus();
             UpdateCustomList();
+            LoadMods();
+            RenderHome();
             UpdateWrapperSourceInfo();
         }
         catch (Exception ex) { OverviewText.Text = "Could not inspect the exe: " + ex.Message; }

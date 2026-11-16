@@ -158,4 +158,6 @@ public sealed class LibraryData
 {
     public int Version { get; set; } = 1;
     public List<GameEntry> Games { get; set; } = new();
+    /// <summary>false = Easy mode (Home, Mods, Fixes, Launch log); true = all tabs.</summary>
+    public bool AdvancedMode { get; set; }
 }

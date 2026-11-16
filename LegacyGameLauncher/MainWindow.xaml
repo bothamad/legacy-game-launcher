@@ -53,6 +53,7 @@
                                 <ui:Button x:Name="UpdateNowButton" Content="Update now" Icon="{ui:SymbolIcon ArrowSync24}" Appearance="Primary" HorizontalAlignment="Stretch" Margin="0" Click="UpdateNow_Click"/>
                             </StackPanel>
                         </Border>
+                        <ui:ToggleSwitch x:Name="AdvancedToggle" Content="Advanced mode" Margin="2,8,0,0" Click="AdvancedToggle_Click"/>
                         <DockPanel Margin="0,8,0,0">
                             <ui:Button DockPanel.Dock="Right" Content="Check for updates" Icon="{ui:SymbolIcon ArrowSync24}" Margin="0" Click="CheckUpdates_Click"/>
                             <TextBlock x:Name="VersionText" Style="{StaticResource Hint}" FontSize="11" VerticalAlignment="Center" Margin="2,0,8,0"/>
@@ -120,7 +121,30 @@
                     <TabControl x:Name="TabHost" Grid.Row="1">
 
                         <!-- Overview + dependencies + DRM -->
-                        <TabItem Header="Overview">
+                        <TabItem Header="Home">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <StackPanel Margin="0,12,8,0">
+                                    <GroupBox Header="Status">
+                                        <StackPanel x:Name="HomeStatus"/>
+                                    </GroupBox>
+                                    <GroupBox Header="Get this game running">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource Hint}" Text="One click applies the settings researched for this game (Windows compatibility options). You can undo it any time."/>
+                                            <WrapPanel>
+                                                <ui:Button Content="Apply recommended settings" Icon="{ui:SymbolIcon Wand24}" Appearance="Primary" Click="HomeRecommended_Click"/>
+                                                <ui:Button Content="Undo everything for this game" Icon="{ui:SymbolIcon ArrowUndo24}" Click="UndoAll_Click"/>
+                                            </WrapPanel>
+                                            <TextBlock x:Name="HomeResult" Style="{StaticResource Hint}"/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Tips for this game">
+                                        <TextBlock x:Name="HomeTips" TextWrapping="Wrap"/>
+                                    </GroupBox>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <TabItem Header="Overview" Tag="advanced">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel Margin="0,12,8,0">
                                     <GroupBox Header="Game">
@@ -154,6 +178,34 @@
                         </TabItem>
 
                         <!-- One-click fixes (downloaded from the projects' official GitHub releases) -->
+                        <TabItem Header="Mods">
+                            <Grid Margin="0,12,8,12">
+                                <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource Hint}" Text="Keep this game's mods here (kits, faces, stadiums, patches, widescreen fixes). Import a .zip or a folder once, then switch mods on and off: on copies the mod into the game folder and backs up what it replaces, off puts the originals back exactly. Two mods that change the same file can't be on together. Nothing inside a mod is ever run, and the game's exe is never replaced."/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                        <TextBlock Text="Install into subfolder" VerticalAlignment="Center" Width="160"/>
+                                        <TextBox x:Name="ModSubfolder" Width="220"/>
+                                        <TextBlock Text="  (blank = the game's own folder; set before importing)" VerticalAlignment="Center" Style="{StaticResource Hint}" Margin="0"/>
+                                    </StackPanel>
+                                    <WrapPanel>
+                                        <ui:Button Content="Import .zip…" Icon="{ui:SymbolIcon FolderZip24}" Appearance="Primary" Click="ModImportZip_Click"/>
+                                        <ui:Button Content="Import folder…" Icon="{ui:SymbolIcon FolderAdd24}" Click="ModImportFolder_Click"/>
+                                        <ui:Button Content="Turn on" Icon="{ui:SymbolIcon CheckmarkCircle24}" Click="ModEnable_Click"/>
+                                        <ui:Button Content="Turn off" Icon="{ui:SymbolIcon DismissCircle24}" Click="ModDisable_Click"/>
+                                        <ui:Button Content="Remove from library" Icon="{ui:SymbolIcon Delete24}" Click="ModDelete_Click"/>
+                                        <ui:Button Content="Open mod files" Icon="{ui:SymbolIcon FolderOpen24}" Click="ModOpen_Click"/>
+                                    </WrapPanel>
+                                </StackPanel>
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                    <ListBox x:Name="ModList" SelectionChanged="ModList_SelectionChanged" MouseDoubleClick="ModList_DoubleClick"/>
+                                    <TextBox Grid.Column="2" x:Name="ModDetails" Style="{StaticResource Mono}"/>
+                                </Grid>
+                                <TextBox Grid.Row="2" x:Name="ModLog" Style="{StaticResource Mono}" Height="80" Margin="0,8,0,0"/>
+                            </Grid>
+                        </TabItem>
+
                         <TabItem Header="Fixes">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel Margin="0,12,8,0">
@@ -211,7 +263,7 @@
                         </TabItem>
 
                         <!-- Compatibility -->
-                        <TabItem Header="Compatibility">
+                        <TabItem Header="Compatibility" Tag="advanced">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel Margin="0,12,8,0">
                                     <GroupBox Header="Windows compatibility layers">
@@ -287,7 +339,7 @@
                         </TabItem>
 
                         <!-- Graphics wrapper -->
-                        <TabItem Header="Graphics">
+                        <TabItem Header="Graphics" Tag="advanced">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel Margin="0,12,8,0">
                                     <GroupBox Header="Graphics wrapper (optional, you download it)">
@@ -338,7 +390,7 @@
                         </TabItem>
 
                         <!-- Config files -->
-                        <TabItem Header="Game config">
+                        <TabItem Header="Game config" Tag="advanced">
                             <Grid Margin="0,12,8,0">
                                 <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="200"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                                 <StackPanel>
@@ -387,7 +439,7 @@
                         </TabItem>
 
                         <!-- Controllers -->
-                        <TabItem Header="Controllers">
+                        <TabItem Header="Controllers" Tag="advanced">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel Margin="0,12,8,0">
                                     <GroupBox Header="Connected controllers">
@@ -471,7 +523,7 @@
                         </TabItem>
 
                         <!-- Undo -->
-                        <TabItem Header="Changes &amp; undo">
+                        <TabItem Header="Changes &amp; undo" Tag="advanced">
                             <DockPanel Margin="0,12,8,12">
                                 <StackPanel DockPanel.Dock="Top">
                                     <TextBlock Style="{StaticResource Hint}" Text="Every change the launcher made for this game, with the original state recorded the first time it touched each file or registry value. Undo restores those originals exactly."/>
