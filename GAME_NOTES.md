@@ -30,6 +30,7 @@ API, copy-protection markers) against your actual exe instead of trusting the pr
 | Listed as using **SafeDisc** (version not given) | Medium | PCGamingWiki SafeDisc page |
 | Freezes at the start-up screen, sometimes caused by antivirus | Anecdotal | therugbyforum.com |
 | PC controls are laid out for a **Logitech Rumblepad 2** (DirectInput): works "with no need to remap anything"; an Xbox 360 pad gets mixed-up buttons (sprint, button 8, lands on Start) | Medium (several forum users) | therugbyforum.com "PC Rugby 08 advice" |
+| **Tested fix (Nov 2026):** use the PS4 pad directly over USB, no DS4Windows and no dinputto8. DS4Windows Nexus' drivers (HidHide, VIIPER, USBip) made the game crash in `DINPUT.dll`; dinputto8 avoided the crash but broke team select. Removing DS4Windows and its drivers fixed both. | Confirmed on the author's PC | This project |
 | On PC, Start/Back aren't used - pause with **Esc**; special moves are **L1 + a face button** instead of the right stick | Medium (forum review) | therugbyforum.com "2008 impressions" |
 
 ## Changes made to the launcher from this research
